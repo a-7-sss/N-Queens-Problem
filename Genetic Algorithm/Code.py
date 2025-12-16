@@ -1,63 +1,61 @@
 import random
 
-# Fitness Function
-def fitness(state):
-    attacks = 0
-    n = len(state)
-
+# this function checks how many queens attack each other
+def fitness(board):
+    att = 0
+    n = len(board)
     for i in range(n):
-        for j in range(i + 1, n):
-            if state[i] == state[j]:
-                attacks += 1
-            if abs(state[i] - state[j]) == abs(i - j):
-                attacks += 1
+        for j in range(i+1, n):
+            if board[i] == board[j]:
+                att += 1
+            if abs(board[i] - board[j]) == abs(i - j):
+                att += 1
+    return att
 
-    return -attacks
-
-
-# Tournament Selection
+# choose best from random 3
 def select(pop):
     group = random.sample(pop, 3)
-    return max(group, key=lambda c: fitness(c))
+    best = group[0]
+    for g in group:
+        if fitness(g) < fitness(best):
+            best = g
+    return best
 
-
-# One-Point Crossover
+# crossover: take some from a and rest from b
 def crossover(a, b):
-    point = random.randint(1, len(a) - 1)
-    return a[:point] + b[point:]
+    p = random.randint(1, len(a)-1)
+    child = a[:p] + b[p:]
+    return child
 
+# random small change
+def mutate(b):
+    if random.random() < 0.1:
+        i = random.randint(0, len(b)-1)
+        b[i] = random.randint(0, len(b)-1)
+    return b
 
-# Mutation
-def mutate(state, rate=0.1):
-    if random.random() < rate:
-        idx = random.randint(0, len(state) - 1)
-        state[idx] = random.randint(0, len(state) - 1)
-    return state
+def solve(n):
+    pop = []
+    for _ in range(100):
+        board = [random.randint(0,n-1) for _ in range(n)]
+        pop.append(board)
 
-
-# Genetic Algorithm Main Loop
-def solve_nqueens(n, pop_size=150, generations=2000):
-    pop = [[random.randint(0, n - 1) for _ in range(n)] for _ in range(pop_size)]
-
-    for _ in range(generations):
-        pop = sorted(pop, key=lambda c: fitness(c), reverse=True)
-
+    for gen in range(2000):
+        pop.sort(key=lambda x: fitness(x))
         if fitness(pop[0]) == 0:
             return pop[0]
 
-        new_pop = []
-        for _ in range(pop_size):
-            parent1 = select(pop)
-            parent2 = select(pop)
-            child = crossover(parent1, parent2)
-            child = mutate(child)
-            new_pop.append(child)
-
-        pop = new_pop
+        newpop = []
+        for _ in range(100):
+            p1 = select(pop)
+            p2 = select(pop)
+            c = crossover(p1, p2)
+            c = mutate(c)
+            newpop.append(c)
+        pop = newpop
 
     return pop[0]
 
 
-if __name__ == "__main__":
-    solution = solve_nqueens(8)
-    print("Solution:", solution)
+sol = solve(8)
+print("Solution:", sol)
