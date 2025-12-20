@@ -1,4 +1,4 @@
-# Solving N-Queens with Hill Climbing (Simple Try)
+# Solving N-Queens with Hill Climbing
 
 In this project, I tried to solve the N-Queens problem using the Hill Climbing algorithm.
 The idea here is not to make the best or fastest solution, but to understand how
@@ -119,3 +119,4 @@ Hill Climbing is not a perfect algorithm.
 However, it is a good example to understand how local search works.
 
 This project helped me understand how small improvements can lead to a good solution.
+
